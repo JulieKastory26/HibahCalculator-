@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hibah Calculator | Emriiz Group</title>
+<style>
+:root{--navy:#10243a;--gold:#c5a45d;--paper:#f5f6f8;--ink:#172334;--muted:#657184;--line:#dce1e8;--green:#16864a}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}.wrap{max-width:620px;margin:0 auto;padding:20px 14px 40px}.hero{background:linear-gradient(135deg,#10243a,#203b58);color:#fff;border-radius:20px;padding:25px 22px;margin-bottom:16px;border-bottom:4px solid var(--gold)}.eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#e6d4a6}.hero h1{font-size:28px;margin:9px 0}.hero p{margin:0;color:#e3e9ef;line-height:1.5}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px;margin:12px 0;box-shadow:0 5px 18px #1723340a}label{display:block;font-size:14px;font-weight:700;margin:0 0 7px}.field{margin-bottom:16px}input,select{width:100%;padding:12px 13px;border:1px solid #cbd3dd;border-radius:10px;font-size:16px;background:#fff;color:var(--ink)}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}.choice{border:1px solid var(--line);padding:12px;border-radius:10px;display:flex;gap:8px;align-items:center;font-weight:400;margin:0}.choice input{width:auto}.plans{display:grid;grid-template-columns:1fr;gap:9px}.plan{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:13px}.plan input{width:auto}.plan strong{font-size:16px}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:7px}.result{background:#f8f4e9;border:1px solid #e4d5af;border-radius:12px;padding:15px;margin-top:10px}.result .amount{font-size:25px;font-weight:800;margin:5px 0;color:var(--navy)}button{border:0;border-radius:11px;padding:14px 16px;font-weight:700;font-size:16px;width:100%;cursor:pointer}.primary{background:var(--green);color:#fff}.secondary{background:var(--navy);color:#fff;margin-top:9px}.status{font-size:13px;line-height:1.5;color:var(--muted)}.footer{text-align:center;color:var(--muted);font-size:11px;line-height:1.5;padding:10px}.error{color:#b42318;font-size:13px;margin-top:6px}.hidden{display:none}@media(min-width:520px){.plans{grid-template-columns:1fr 1fr 1fr}}
+</style></head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">Emriiz Group · AIA Takaful</div><h1>Hibah Calculator</h1><p>Semak pilihan perlindungan dan hubungi Julie untuk mendapatkan quotation yang bersesuaian.</p></header>
+<form id="calcForm" class="card" novalidate>
+<div class="field"><label for="name">Nama prospek</label><input id="name" autocomplete="name" placeholder="Masukkan nama penuh" required></div>
+<div class="field"><label for="age">Umur (16–70 tahun)</label><input id="age" type="number" min="16" max="70" step="1" placeholder="Contoh: 30" required><div id="ageError" class="error hidden">Sila masukkan umur bulat antara 16 hingga 70 tahun.</div></div>
+<div class="field"><label>Jantina</label><div class="choices"><label class="choice"><input type="radio" name="gender" value="Lelaki" checked> Lelaki</label><label class="choice"><input type="radio" name="gender" value="Perempuan"> Perempuan</label></div></div>
+<div class="field"><label>Status merokok / vape</label><div class="choices"><label class="choice"><input type="radio" name="smoking" value="Tidak merokok / tidak vape" checked> Tidak merokok / vape</label><label class="choice"><input type="radio" name="smoking" value="Merokok / menggunakan vape"> Merokok / vape</label></div></div>
+<div class="field"><label>Jumlah hibah</label><div class="plans"><label class="plan"><input type="radio" name="plan" value="350000" checked><strong>RM350,000</strong></label><label class="plan"><input type="radio" name="plan" value="500000"><strong>RM500,000</strong></label><label class="plan"><input type="radio" name="plan" value="1000000"><strong>RM1,000,000</strong></label></div></div>
+<button class="secondary" type="submit">Semak anggaran quotation</button>
+<div id="result" class="result hidden" aria-live="polite"><div id="resultTitle"><strong>Ringkasan pilihan</strong></div><div id="resultAmount" class="amount"></div><div id="resultNote" class="status"></div><button id="whatsapp" class="primary" type="button" style="margin-top:14px">Hubungi Julie melalui WhatsApp</button></div>
+<p class="hint">Anggaran hanya akan dipaparkan apabila kadar yang disahkan tersedia untuk pilihan berkenaan. Kadar dan kelayakan akhir tertakluk kepada quotation rasmi AIA Public Takaful.</p>
+</form>
+<div class="footer">Draf prototaip untuk semakan. Sila sahkan semua kadar, manfaat, kelayakan dan penggunaan jenama sebelum diterbitkan kepada prospek.</div>
+</main>
+<script>
+// Rates transcribed from the supplied poster for RM350,000 only.
+// Verify these values against the current approved illustration before production.
+const rates350kNonSmoker={
+  "Lelaki":{"25":81.76,"28":82.14,"30":84.44,"32":91.46,"35":104.73,"38":122.99,"40":139.80},
+  "Perempuan":{"25":54.70,"28":62.32,"30":69.34,"32":78.63,"35":94.48,"38":116.90,"40":139.70}
+};
+const form=document.getElementById('calcForm');let latestMessage='';
+const money=n=>new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR'}).format(n);
+function getData(){return {name:document.getElementById('name').value.trim(),age:Number(document.getElementById('age').value),gender:form.elements.gender.value,smoking:form.elements.smoking.value,plan:Number(form.elements.plan.value)}}
+form.addEventListener('submit',e=>{e.preventDefault();const d=getData();const err=document.getElementById('ageError');const ageValid=Number.isInteger(d.age)&&d.age>=16&&d.age<=70;err.classList.toggle('hidden',ageValid);if(!d.name||!ageValid){if(!d.name)document.getElementById('name').focus();else document.getElementById('age').focus();return;}
+let rate=null;if(d.plan===350000&&d.smoking==='Tidak merokok / tidak vape'&&rates350kNonSmoker[d.gender][String(d.age)]!==undefined)rate=rates350kNonSmoker[d.gender][String(d.age)];
+const result=document.getElementById('result');result.classList.remove('hidden');document.getElementById('resultTitle').textContent='Ringkasan pilihan untuk '+d.name;
+if(rate!==null){document.getElementById('resultAmount').textContent=money(rate)+' / bulan';document.getElementById('resultNote').textContent='Kadar contoh daripada poster yang dibekalkan untuk RM350,000. Sila sahkan dengan quotation rasmi sebelum digunakan.';}else{document.getElementById('resultAmount').textContent='Quotation diperlukan';document.getElementById('resultNote').textContent='Kadar yang disahkan belum tersedia untuk kombinasi umur, jantina, status merokok/vape dan jumlah hibah ini. Kami tidak akan menganggarkan kadar secara automatik.';}
+latestMessage=`Assalamualaikum Julie. Saya berminat dengan quotation Hibah.\n\nNama: ${d.name}\nUmur: ${d.age}\nJantina: ${d.gender}\nStatus: ${d.smoking}\nJumlah hibah: RM${d.plan.toLocaleString('en-MY')}\nAnggaran sumbangan: ${rate!==null?money(rate)+' sebulan':'Mohon semakan quotation rasmi'}\n\nBoleh bantu saya mendapatkan maklumat lanjut?`;
+});
+document.getElementById('whatsapp').addEventListener('click',()=>{if(!latestMessage)return;window.open('https://wa.me/60197366980?text='+encodeURIComponent(latestMessage),'_blank','noopener,noreferrer');});
+</script></body></html>
